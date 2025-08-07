@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Animal Viewer</title>
+
+  <!-- Libraries and CSS -->
+  <script src="js/jquery-2.1.4.min.js"></script>
+  <script src="js/handlebars-v3.0.3.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+  <script src="AnimalsData.js"></script>
+
+  <link href="css/bootstrap.css" rel="stylesheet" />
+  <link href="css/gallery.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="container">
+    <div class="row">
+      <div class="col-md-2">
+        <div id="content_left"><!-- animal list here --></div>
+      </div>
+      <div class="col-md-10">
+        <div id="content_right"><!-- animal detail here --></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Animal list template -->
+  <script id="category-template" type="text/x-handlebars-template">
+    <ul class="nav nav-pills nav-stacked nav-pills-stacked-example">
+      {{#each animals}}
+        <li><a href="#" class="js-animal-name" data-id="{{name}}">{{name}}</a></li>
+      {{/each}}
+    </ul>
+  </script>
+
+  <!-- Animal detail template showing two images and description -->
+  <script id="animal-detail-template" type="text/x-handlebars-template">
+    <h2>{{name}}</h2>
+    <p>{{description}}</p>
+    <div style="display:flex; gap:10px; flex-wrap: wrap;">
+      <img src="{{image1}}" alt="{{name}} image 1" style="max-width: 45%; height: auto;">
+      <img src="{{image2}}" alt="{{name}} image 2" style="max-width: 45%; height: auto;">
+    </div>
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      // Render animal list
+      var source = $("#category-template").html();
+      var template = Handlebars.compile(source);
+      var html = template(animals_data);
+      $('#content_left').html(html);
+
+      // Click event for animal names (using event delegation)
+      $('#content_left').on('click', '.js-animal-name', function (e) {
+        e.preventDefault();
+        var animal_name = $(this).data('id');
+
+        // Find animal data by name
+        var an_animal = animals_data.animals.find(function (animal) {
+          return animal.name === animal_name;
+        });
+
+        if (an_animal) {
+          var detailSource = $("#animal-detail-template").html();
+          var detailTemplate = Handlebars.compile(detailSource);
+          var detailHtml = detailTemplate(an_animal);
+          $('#content_right').html(detailHtml);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
